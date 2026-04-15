@@ -1,0 +1,16 @@
+{
+  "name": "resume-assist",
+  "version": "1.0.0",
+  "description": "Premium ATS-Ready Resume with Local PDF Generation Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "generate": "node generate-pdf.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "hbs": "^4.2.1",
+    "puppeteer": "^21.11.0"
+  }
+}

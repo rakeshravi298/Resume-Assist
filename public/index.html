@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Assist | Premium Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 50px;
+        }
+
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .section-card:focus-within {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-main);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: #fdfdfd;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .entry-block {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+
+        .remove-btn:hover { background: #fecaca; }
+
+        .add-btn {
+            background: #f1f5f9;
+            color: var(--primary);
+            border: 1px dashed var(--primary);
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+
+        .add-btn:hover { background: #e2e8f0; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: #e2e8f0;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .bullets-list {
+            margin-top: 12px;
+        }
+
+        .bullet-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .bullet-input-row input { flex: 1; }
+
+        .remove-bullet {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .remove-bullet:hover { color: #ef4444; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span>📄</span> Resume Assist <span class="status-badge">Premium v2.1</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <input type="text" id="profile-name" placeholder="Profile Name (e.g. DataEng_v1)" style="width: 200px; margin-bottom: 0;">
+                <button type="button" class="btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="saveProfile()">💾 Save Profile</button>
+            </div>
+            <div style="height: 24px; width: 1px; background: var(--border);"></div>
+            <select id="profile-list" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px;" onchange="loadSelectedProfile()">
+                <option value="">-- Load Profile --</option>
+            </select>
+            <span id="save-status" style="font-size: 12px; color: var(--text-muted);">Stored locally</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <form id="resume-form">
+            <!-- Personal Info -->
+            <div class="section-card">
+                <h3 class="section-title">Personal Information</h3>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="name" placeholder="John Doe" value="Rakesh R">
+                    </div>
+                    <div class="form-group">
+                        <label>Job Title</label>
+                        <input type="text" name="title" placeholder="Senior Software Engineer" value="Senior Data Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" value="rakeshravi796@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" name="phone" value="+91 95001 14098">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" name="location" placeholder="City, Country" value="India">
+                    </div>
+                    <div class="form-group">
+                        <label>LinkedIn (username)</label>
+                        <input type="text" name="linkedin" value="rakesh-r">
+                    </div>
+                    <div class="form-group">
+                        <label>GitHub (username)</label>
+                        <input type="text" name="github">
+                    </div>
+                    <div class="form-group">
+                        <label>Portfolio/Website</label>
+                        <input type="text" name="website">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Professional Summary</label>
+                    <textarea name="summary" rows="3" placeholder="Briefly describe your career goals and achievements...">Experienced Senior Data Engineer with a strong background in architecting scalable data pipelines and transitioning enterprise reporting hubs to cloud-native solutions.</textarea>
+                </div>
+            </div>
+
+            <!-- Experience -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    Experience
+                    <button type="button" class="add-btn" style="width: auto; padding: 4px 12px; border-style: solid; margin: 0;" onclick="addExperience()">+ Add</button>
+                </h3>
+                <div id="experience-container">
+                    <!-- Dynamic entries will go here -->
+                </div>
+            </div>
+
+            <!-- Education -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    Education
+                    <button type="button" class="add-btn" style="width: auto; padding: 4px 12px; border-style: solid; margin: 0;" onclick="addEducation()">+ Add</button>
+                </h3>
+                <div id="education-container"></div>
+            </div>
+
+            <!-- Projects -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    Projects
+                    <button type="button" class="add-btn" style="width: auto; padding: 4px 12px; border-style: solid; margin: 0;" onclick="addProject()">+ Add</button>
+                </h3>
+                <div id="projects-container"></div>
+            </div>
+
+            <!-- Skills -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    Skills
+                    <button type="button" class="add-btn" style="width: auto; padding: 4px 12px; border-style: solid; margin: 0;" onclick="addSkillCategory()">+ Add Category</button>
+                </h3>
+                <div id="skills-container" class="grid-2"></div>
+            </div>
+
+            <!-- Certifications -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    Certifications
+                    <button type="button" class="add-btn" style="width: auto; padding: 4px 12px; border-style: solid; margin: 0;" onclick="addCertification()">+ Add</button>
+                </h3>
+                <div id="certs-container"></div>
+            </div>
+        </form>
+    </div>
+
+    <div class="floating-actions">
+        <button type="button" class="btn-primary" id="download-btn">
+            <span id="btn-icon">⬇</span>
+            <span id="btn-text">Download Premium PDF</span>
+        </button>
+    </div>
+
+    <script>
+        // Data Collectors
+        function getBullets(container) {
+            return Array.from(container.querySelectorAll('.bullet-input-row input')).map(i => i.value).filter(v => v.trim());
+        }
+
+        function collectData() {
+            const form = document.getElementById('resume-form');
+            const data = {
+                name: form.name.value,
+                title: form.title.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                location: form.location.value,
+                linkedin: form.linkedin.value,
+                github: form.github.value,
+                website: form.website.value,
+                summary: form.summary.value,
+                experience: Array.from(document.querySelectorAll('.experience-entry')).map(el => ({
+                    role: el.querySelector('[name=role]').value,
+                    company: el.querySelector('[name=company]').value,
+                    duration: el.querySelector('[name=duration]').value,
+                    location: el.querySelector('[name=location]').value,
+                    bullets: getBullets(el)
+                })),
+                education: Array.from(document.querySelectorAll('.education-entry')).map(el => ({
+                    institution: el.querySelector('[name=institution]').value,
+                    degree: el.querySelector('[name=degree]').value,
+                    year: el.querySelector('[name=year]').value,
+                    gpa: el.querySelector('[name=gpa]').value
+                })),
+                projects: Array.from(document.querySelectorAll('.project-entry')).map(el => ({
+                    name: el.querySelector('[name=name]').value,
+                    link: el.querySelector('[name=link]').value,
+                    tech: el.querySelector('[name=tech]').value,
+                    description: el.querySelector('[name=description]').value
+                })),
+                skills: {
+                    categories: Array.from(document.querySelectorAll('.skill-entry')).map(el => ({
+                        label: el.querySelector('[name=label]').value,
+                        items: el.querySelector('[name=items]').value
+                    }))
+                },
+                certifications: Array.from(document.querySelectorAll('.cert-entry')).map(el => ({
+                    name: el.querySelector('[name=name]').value,
+                    issuer: el.querySelector('[name=issuer]').value,
+                    year: el.querySelector('[name=year]').value
+                }))
+            };
+            return data;
+        }
+
+        // UI Helpers
+        function createBulletRow(val = '') {
+            const div = document.createElement('div');
+            div.className = 'bullet-input-row';
+            div.innerHTML = `
+                <input type="text" placeholder="Reduced processing latency by 40%..." value="${val}">
+                <button type="button" class="remove-bullet" onclick="this.parentElement.remove()">✕</button>
+            `;
+            return div;
+        }
+
+        function addExperience(data = null) {
+            const container = document.getElementById('experience-container');
+            const div = document.createElement('div');
+            div.className = 'entry-block experience-entry';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                <div class="grid-2">
+                    <div class="form-group"><label>Role</label><input type="text" name="role" value="${data?.role || ''}"></div>
+                    <div class="form-group"><label>Company</label><input type="text" name="company" value="${data?.company || ''}"></div>
+                    <div class="form-group"><label>Duration</label><input type="text" name="duration" placeholder="Jan 2022 – Present" value="${data?.duration || ''}"></div>
+                    <div class="form-group"><label>Location</label><input type="text" name="location" value="${data?.location || ''}"></div>
+                </div>
+                <div class="form-group">
+                    <label>Responsibilities & Achievements</label>
+                    <div class="bullets-container"></div>
+                    <button type="button" class="add-btn" onclick="this.previousElementSibling.appendChild(createBulletRow())">+ Add Point</button>
+                </div>
+            `;
+            container.appendChild(div);
+            const bulletsContainer = div.querySelector('.bullets-container');
+            if (data?.bullets) {
+                data.bullets.forEach(b => bulletsContainer.appendChild(createBulletRow(b)));
+            } else {
+                bulletsContainer.appendChild(createBulletRow());
+            }
+        }
+
+        function addEducation(data = null) {
+            const container = document.getElementById('education-container');
+            const div = document.createElement('div');
+            div.className = 'entry-block education-entry';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                <div class="grid-2">
+                    <div class="form-group"><label>Institution</label><input type="text" name="institution" value="${data?.institution || ''}"></div>
+                    <div class="form-group"><label>Degree</label><input type="text" name="degree" value="${data?.degree || ''}"></div>
+                    <div class="form-group"><label>Year</label><input type="text" name="year" value="${data?.year || ''}"></div>
+                    <div class="form-group"><label>GPA / Grade</label><input type="text" name="gpa" value="${data?.gpa || ''}"></div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function addProject(data = null) {
+            const container = document.getElementById('projects-container');
+            const div = document.createElement('div');
+            div.className = 'entry-block project-entry';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                <div class="grid-2">
+                    <div class="form-group"><label>Project Name</label><input type="text" name="name" value="${data?.name || ''}"></div>
+                    <div class="form-group"><label>Link (URL)</label><input type="text" name="link" value="${data?.link || ''}"></div>
+                    <div class="form-group"><label>Technologies Used</label><input type="text" name="tech" placeholder="React, Node.js..." value="${data?.tech || ''}"></div>
+                </div>
+                <div class="form-group"><label>Short Description</label><textarea name="description" rows="2">${data?.description || ''}</textarea></div>
+            `;
+            container.appendChild(div);
+        }
+
+        function addSkillCategory(data = null) {
+            const container = document.getElementById('skills-container');
+            const div = document.createElement('div');
+            div.className = 'entry-block skill-entry';
+            div.style.marginBottom = '0';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                <div class="form-group"><label>Category Label</label><input type="text" name="label" placeholder="Languages" value="${data?.label || ''}"></div>
+                <div class="form-group"><label>Skills (comma separated)</label><input type="text" name="items" placeholder="Python, JavaScript, SQL" value="${data?.items || ''}"></div>
+            `;
+            container.appendChild(div);
+        }
+
+        function addCertification(data = null) {
+            const container = document.getElementById('certs-container');
+            const div = document.createElement('div');
+            div.className = 'entry-block cert-entry';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+                <div class="grid-2">
+                    <div class="form-group"><label>Certification Name</label><input type="text" name="name" value="${data?.name || ''}"></div>
+                    <div class="form-group"><label>Issuer</label><input type="text" name="issuer" value="${data?.issuer || ''}"></div>
+                    <div class="form-group"><label>Year</label><input type="text" name="year" value="${data?.year || ''}"></div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        // Initial Data Populate
+        const defaultData = {
+            experience: [
+                {
+                    role: 'Senior Data Engineer',
+                    company: 'Enterprise Solutions Corp',
+                    duration: 'Jan 2022 – Present',
+                    location: 'Remote',
+                    bullets: [
+                        'Architected scalable data pipelines using AWS Glue and SageMaker, reducing processing latency by 40% across 500TB datasets.',
+                        'Spearheaded the transition to Azure Fabric for regional reporting hubs, improving data accessibility for 50+ executive stakeholders.'
+                    ]
+                },
+                {
+                    role: 'Machine Learning Associate',
+                    company: 'TechNova Analytics',
+                    duration: 'June 2020 – Dec 2021',
+                    location: 'India',
+                    bullets: [
+                        'Developed predictive models for retail demand forecasting, achieving 92% prediction accuracy.',
+                        'Automated data cleaning workflows using Python, saving 15 hours of manual work per week.'
+                    ]
+                }
+            ],
+            education: [
+                { institution: 'State Technical University', degree: 'M.S. in Data Science', year: '2016 – 2018', gpa: '3.9/4.0' },
+                { institution: 'National Institute of Engineering', degree: 'B.E. Computer Science', year: '2012 – 2016' }
+            ],
+            skills: [
+                { label: 'Programming', items: 'Python, SQL, Java, M, KQL' },
+                { label: 'Data & ML', items: 'Pandas, EDA, Statistics, Machine Learning' },
+                { label: 'Cloud', items: 'AWS (EC2, S3, Bedrock, SageMaker), Azure Fabric' },
+                { label: 'BI Tools', items: 'Power BI, Tableau, Microsoft Excel' }
+            ]
+        };
+
+        // Profile Persistence Logic
+        async function saveProfile() {
+            const profileName = document.getElementById('profile-name').value;
+            if (!profileName) return alert('Please enter a name for this profile');
+            
+            const data = collectData();
+            try {
+                const res = await fetch('/save-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ profileName, data })
+                });
+                if (res.ok) {
+                    alert(`✅ Profile "${profileName}" saved to backend!`);
+                    updateProfileList();
+                }
+            } catch (e) {
+                alert('Save failed: ' + e.message);
+            }
+        }
+
+        async function updateProfileList() {
+            try {
+                const res = await fetch('/list-profiles');
+                const profiles = await res.json();
+                const select = document.getElementById('profile-list');
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">-- Load Profile --</option>';
+                profiles.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.innerText = p.name;
+                    select.appendChild(opt);
+                });
+                select.value = currentVal;
+            } catch (e) { console.error('List failed', e); }
+        }
+
+        async function loadSelectedProfile() {
+            const name = document.getElementById('profile-list').value;
+            if (!name) return;
+            
+            try {
+                const res = await fetch(`/load-profile/${name}`);
+                const content = await res.json();
+                populateAll(content.data);
+                document.getElementById('profile-name').value = content.profileName;
+                localStorage.setItem('resume-data-v2', JSON.stringify(content.data));
+                alert(`✅ Profile "${content.profileName}" loaded!`);
+            } catch (e) {
+                alert('Load failed');
+            }
+        }
+
+        function populateAll(data) {
+            if (!data) return;
+            // Clear current dynamics
+            document.getElementById('experience-container').innerHTML = '';
+            document.getElementById('education-container').innerHTML = '';
+            document.getElementById('projects-container').innerHTML = '';
+            document.getElementById('skills-container').innerHTML = '';
+            document.getElementById('certs-container').innerHTML = '';
+
+            // Simple fields
+            const form = document.getElementById('resume-form');
+            Object.keys(data).forEach(key => {
+                if (form[key] && typeof data[key] === 'string') form[key].value = data[key];
+            });
+
+            // Dynamics
+            data.experience?.forEach(e => addExperience(e));
+            data.education?.forEach(e => addEducation(e));
+            data.projects?.forEach(p => addProject(p));
+            data.skills?.categories?.forEach(s => addSkillCategory(s));
+            data.certifications?.forEach(c => addCertification(c));
+        }
+
+        function init() {
+            updateProfileList();
+            const saved = localStorage.getItem('resume-data-v2');
+            if (saved) {
+                populateAll(JSON.parse(saved));
+            } else {
+                // Populate defaults
+                defaultData.experience.forEach(e => addExperience(e));
+                defaultData.education.forEach(e => addEducation(e));
+                defaultData.skills.forEach(s => addSkillCategory(s));
+            }
+        }
+
+        // Auto-save
+        document.addEventListener('input', () => {
+            const data = collectData();
+            localStorage.setItem('resume-data-v2', JSON.stringify(data));
+            document.getElementById('save-status').innerText = 'Changes saved';
+            setTimeout(() => { document.getElementById('save-status').innerText = 'Stored locally'; }, 2000);
+        });
+
+        // Download Action
+        document.getElementById('download-btn').addEventListener('click', async () => {
+            const data = collectData();
+            const btn = document.getElementById('download-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+
+            btn.disabled = true;
+            btnText.innerText = 'Generating Premium PDF...';
+            btnIcon.innerText = '⏳';
+
+            try {
+                const response = await fetch('/generate-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('PDF generation failed');
+
+                const savedFilename = response.headers.get('X-File-Saved');
+                
+                // Trigger browser download (might still be 0B for some users, but server is the source of truth now)
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = savedFilename || "Resume.pdf";
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                btnText.innerText = 'Saved to Server!';
+                btnIcon.innerText = '💾';
+                
+                const status = document.getElementById('save-status');
+                status.innerHTML = `File saved to: <b style="color:var(--primary)">generated_resumes/${savedFilename}</b>`;
+                
+                setTimeout(() => {
+                    btnText.innerText = 'Download Premium PDF';
+                    btnIcon.innerText = '⬇';
+                }, 3000);
+            } catch (err) {
+                alert('Connection Error: Is the server running? ' + err.message);
+                btnText.innerText = 'Error Generating PDF';
+                btnIcon.innerText = '❌';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

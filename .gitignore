@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Data & Outputs
+data/
+generated_resumes/
+*.pdf
+
+# System
+.DS_Store
+Thumbs.db
