@@ -234,6 +234,17 @@
   .clickable-link:hover {
     border-color: var(--accent-color);
   }
+  .cert-title {
+    font-size: var(--base-font);
+    font-weight: 600;
+    color: #000;
+  }
+  .cert-issuer {
+    font-size: calc(var(--base-font) - 1.2pt);
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: 6px;
+  }
   .entry-sub { font-size: var(--base-font); font-weight: 600; color: var(--accent-light); }
   .entry-date { font-size: calc(var(--base-font) - 1pt); font-weight: 500; color: var(--text-muted); }
   
@@ -383,12 +394,14 @@
   <section id="certifications" aria-label="Certifications">
     <h2 class="section-heading">Certifications</h2>
   {{#each certifications}}
-  <div class="entry">
+  <div class="entry" style="margin-bottom: 3px;">
     <div class="flex-between">
-      <span class="entry-title">{{#if link}}<a href="{{link}}" class="clickable-link">{{name}}</a>{{else}}{{name}}{{/if}}</span>
+      <span class="cert-title">
+        {{#if link}}<a href="{{link}}" class="clickable-link">{{name}}</a>{{else}}{{name}}{{/if}}
+        <span class="cert-issuer">— {{issuer}}</span>
+      </span>
       <span class="entry-date">{{year}}</span>
     </div>
-    <span class="entry-sub">{{issuer}}</span>
   </div>
   {{/each}}
   {{/if}}
