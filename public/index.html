@@ -230,6 +230,98 @@
 
         .remove-bullet:hover { color: #ef4444; }
 
+        /* Preview Modal Styles */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .preview-content {
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .preview-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .preview-header h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .close-preview {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+
+        .close-preview:hover { background: #e2e8f0; }
+
+        #preview-frame {
+            flex: 1;
+            border: none;
+            background: #f1f5f9;
+        }
+
+        .preview-actions {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fff;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover { background: #e2e8f0; }
+
     </style>
 </head>
 <body>
@@ -244,9 +336,19 @@
                 <button type="button" class="btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="saveProfile()">💾 Save Profile</button>
             </div>
             <div style="height: 24px; width: 1px; background: var(--border);"></div>
+            <button type="button" class="btn-primary" style="padding: 8px 16px; font-size: 13px; background: #64748b;" onclick="resetToDefaults()">🔄 Reset</button>
+            <div style="height: 24px; width: 1px; background: var(--border);"></div>
             <select id="profile-list" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px;" onchange="loadSelectedProfile()">
                 <option value="">-- Load Profile --</option>
             </select>
+            <div style="height: 24px; width: 1px; background: var(--border);"></div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="page-mode" style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 0;">Length:</label>
+                <select id="page-mode" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: white; cursor: pointer;" onchange="togglePageMode()">
+                    <option value="single">Single Page</option>
+                    <option value="multi">Multi Page</option>
+                </select>
+            </div>
             <span id="save-status" style="font-size: 12px; color: var(--text-muted);">Stored locally</span>
         </div>
     </nav>
@@ -259,7 +361,7 @@
                 <div class="grid-2">
                     <div class="form-group">
                         <label>Full Name</label>
-                        <input type="text" name="name" placeholder="John Doe" value="Rakesh R">
+                        <input type="text" id="main-name" name="name" placeholder="John Doe" value="Rakesh R">
                     </div>
                     <div class="form-group">
                         <label>Job Title</label>
@@ -290,9 +392,9 @@
                         <input type="text" name="website">
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 16px;">
+                <div class="form-group" style="margin-top: 15px;">
                     <label>Professional Summary</label>
-                    <textarea name="summary" rows="3" placeholder="Briefly describe your career goals and achievements...">Experienced Senior Data Engineer with a strong background in architecting scalable data pipelines and transitioning enterprise reporting hubs to cloud-native solutions.</textarea>
+                    <textarea name="summary" rows="3" placeholder="Data Scientist and AI Engineer..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 13px; resize: vertical;"></textarea>
                 </div>
             </div>
 
@@ -346,10 +448,31 @@
     </div>
 
     <div class="floating-actions">
-        <button type="button" class="btn-primary" id="download-btn">
-            <span id="btn-icon">⬇</span>
-            <span id="btn-text">Download Premium PDF</span>
+        <button type="button" class="btn-primary" style="background: #10b981;" onclick="showPreview()">
+            <span>👁️</span>
+            <span>Live Preview</span>
         </button>
+        <button type="button" class="btn-primary" id="download-btn">
+            <span id="btn-icon">💾</span>
+            <span id="btn-text">Save PDF to Disk</span>
+        </button>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="preview-modal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h2>Resume Live Preview</h2>
+                <button class="close-preview" onclick="closePreview()">✕</button>
+            </div>
+            <iframe id="preview-frame"></iframe>
+            <div class="preview-actions">
+                <button class="btn-secondary" onclick="closePreview()">Close</button>
+                <button class="btn-primary" onclick="document.getElementById('download-btn').click(); closePreview();">
+                    💾 Save PDF to Disk
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -361,45 +484,48 @@
         function collectData() {
             const form = document.getElementById('resume-form');
             const data = {
-                name: form.name.value,
-                title: form.title.value,
-                email: form.email.value,
-                phone: form.phone.value,
-                location: form.location.value,
-                linkedin: form.linkedin.value,
-                github: form.github.value,
-                website: form.website.value,
-                summary: form.summary.value,
+                _v: SCHEMA_VERSION,
+                multiPage: document.getElementById('page-mode').value === 'multi',
+                name: document.getElementById('main-name').value,
+                title: form.querySelector('input[name="title"]').value,
+                email: form.querySelector('input[name="email"]').value,
+                phone: form.querySelector('input[name="phone"]').value,
+                location: form.querySelector('input[name="location"]').value,
+                linkedin: form.querySelector('input[name="linkedin"]').value,
+                github: form.querySelector('input[name="github"]').value,
+                website: form.querySelector('input[name="website"]').value,
+                summary: form.querySelector('[name="summary"]').value,
                 experience: Array.from(document.querySelectorAll('.experience-entry')).map(el => ({
                     role: el.querySelector('[name=role]').value,
                     company: el.querySelector('[name=company]').value,
                     duration: el.querySelector('[name=duration]').value,
                     location: el.querySelector('[name=location]').value,
                     bullets: getBullets(el)
-                })),
+                })).filter(e => e.role || e.company || e.bullets.length > 0),
                 education: Array.from(document.querySelectorAll('.education-entry')).map(el => ({
                     institution: el.querySelector('[name=institution]').value,
                     degree: el.querySelector('[name=degree]').value,
                     year: el.querySelector('[name=year]').value,
                     gpa: el.querySelector('[name=gpa]').value
-                })),
+                })).filter(e => e.institution || e.degree),
                 projects: Array.from(document.querySelectorAll('.project-entry')).map(el => ({
                     name: el.querySelector('[name=name]').value,
                     link: el.querySelector('[name=link]').value,
                     tech: el.querySelector('[name=tech]').value,
-                    description: el.querySelector('[name=description]').value
-                })),
+                    bullets: getBullets(el)
+                })).filter(e => e.name || e.bullets.length > 0),
                 skills: {
                     categories: Array.from(document.querySelectorAll('.skill-entry')).map(el => ({
                         label: el.querySelector('[name=label]').value,
                         items: el.querySelector('[name=items]').value
-                    }))
+                    })).filter(e => e.label || e.items)
                 },
                 certifications: Array.from(document.querySelectorAll('.cert-entry')).map(el => ({
                     name: el.querySelector('[name=name]').value,
                     issuer: el.querySelector('[name=issuer]').value,
+                    link: el.querySelector('[name=link]').value,
                     year: el.querySelector('[name=year]').value
-                }))
+                })).filter(e => e.name)
             };
             return data;
         }
@@ -469,9 +595,28 @@
                     <div class="form-group"><label>Link (URL)</label><input type="text" name="link" value="${data?.link || ''}"></div>
                     <div class="form-group"><label>Technologies Used</label><input type="text" name="tech" placeholder="React, Node.js..." value="${data?.tech || ''}"></div>
                 </div>
-                <div class="form-group"><label>Short Description</label><textarea name="description" rows="2">${data?.description || ''}</textarea></div>
+                <div class="form-group">
+                    <label>Project Key Highlights</label>
+                    <div class="bullets-container"></div>
+                    <button type="button" class="add-btn" onclick="this.previousElementSibling.appendChild(createBulletRow())">+ Add Highlight</button>
+                </div>
             `;
             container.appendChild(div);
+            const bulletsContainer = div.querySelector('.bullets-container');
+            
+            let bullets = data?.bullets;
+            if (!bullets && data?.description) {
+                bullets = data.description
+                    .split('\n')
+                    .map(line => line.replace(/^[•\-\*\s]+/, '').trim())
+                    .filter(line => line.length > 0);
+            }
+
+            if (bullets && bullets.length > 0) {
+                bullets.forEach(b => bulletsContainer.appendChild(createBulletRow(b)));
+            } else {
+                bulletsContainer.appendChild(createBulletRow());
+            }
         }
 
         function addSkillCategory(data = null) {
@@ -495,6 +640,7 @@
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
                 <div class="grid-2">
                     <div class="form-group"><label>Certification Name</label><input type="text" name="name" value="${data?.name || ''}"></div>
+                    <div class="form-group"><label>Verification Link (URL)</label><input type="text" name="link" placeholder="https://..." value="${data?.link || ''}"></div>
                     <div class="form-group"><label>Issuer</label><input type="text" name="issuer" value="${data?.issuer || ''}"></div>
                     <div class="form-group"><label>Year</label><input type="text" name="year" value="${data?.year || ''}"></div>
                 </div>
@@ -503,7 +649,15 @@
         }
 
         // Initial Data Populate
+        const SCHEMA_VERSION = '2.3.0'; // Updated to track local storage stale state
         const defaultData = {
+            _v: SCHEMA_VERSION,
+            multiPage: false,
+            name: 'Rakesh R',
+            title: 'Senior Data Engineer',
+            email: 'rakeshravi796@gmail.com',
+            phone: '+91 95001 14098',
+            summary: "Data Scientist and AI Engineer with over 1 year of experience delivering end-to-end data and AI solutions across healthcare, logistics, and aviation domains. Proven ability to translate complex datasets into actionable business insights through interactive dashboards and predictive models, while building and deploying production-grade Generative AI and agentic applications on AWS and GCP cloud platforms. Passionate about bridging the gap between data-driven decision making and real-world business impact.",
             experience: [
                 {
                     role: 'Senior Data Engineer',
@@ -530,11 +684,32 @@
                 { institution: 'State Technical University', degree: 'M.S. in Data Science', year: '2016 – 2018', gpa: '3.9/4.0' },
                 { institution: 'National Institute of Engineering', degree: 'B.E. Computer Science', year: '2012 – 2016' }
             ],
-            skills: [
-                { label: 'Programming', items: 'Python, SQL, Java, M, KQL' },
-                { label: 'Data & ML', items: 'Pandas, EDA, Statistics, Machine Learning' },
-                { label: 'Cloud', items: 'AWS (EC2, S3, Bedrock, SageMaker), Azure Fabric' },
-                { label: 'BI Tools', items: 'Power BI, Tableau, Microsoft Excel' }
+            skills: {
+                categories: [
+                    { label: 'Programming', items: 'Python, SQL, Java, M, KQL' },
+                    { label: 'Data & ML', items: 'Pandas, EDA, Statistics, Machine Learning' },
+                    { label: 'Cloud', items: 'AWS (EC2, S3, Bedrock, SageMaker), Azure Fabric' },
+                    { label: 'BI Tools', items: 'Power BI, Tableau, Microsoft Excel' }
+                ]
+            },
+            projects: [
+                {
+                    name: 'Gene Expression Analysis on Cancer Data',
+                    link: 'https://github.com/rakesh-r/gene-expression-analysis',
+                    tech: 'Python, Pandas, TensorFlow, PyTorch',
+                    bullets: [
+                        'Created an ETL pipeline using Python to accumulate, pre-process, and integrate data from multiple cancer studies, resolving class imbalances with SMOTE.',
+                        'Implemented a Graph Convolutional Network (GCN) using PyTorch, leveraging DNA network structure and numerical gene expression data to predict cancer.'
+                    ]
+                }
+            ],
+            certifications: [
+                {
+                    name: 'AWS Certified Machine Learning Specialist',
+                    link: 'https://aws.amazon.com/certification/certified-machine-learning-specialty/',
+                    issuer: 'Amazon Web Services',
+                    year: '2023'
+                }
             ]
         };
 
@@ -552,7 +727,12 @@
                 });
                 if (res.ok) {
                     alert(`✅ Profile "${profileName}" saved to backend!`);
-                    updateProfileList();
+                    await updateProfileList();
+                    const safeName = profileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    document.getElementById('profile-list').value = safeName;
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    alert('Save failed: ' + (errData.error || 'Server error'));
                 }
             } catch (e) {
                 alert('Save failed: ' + e.message);
@@ -582,18 +762,41 @@
             
             try {
                 const res = await fetch(`/load-profile/${name}`);
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Server responded with status ${res.status}`);
+                }
                 const content = await res.json();
                 populateAll(content.data);
                 document.getElementById('profile-name').value = content.profileName;
-                localStorage.setItem('resume-data-v2', JSON.stringify(content.data));
+                const dataToSave = { ...content.data, _v: SCHEMA_VERSION };
+                localStorage.setItem('resume-data-v2', JSON.stringify(dataToSave));
                 alert(`✅ Profile "${content.profileName}" loaded!`);
             } catch (e) {
-                alert('Load failed');
+                alert('Load failed: ' + e.message);
+            }
+        }
+
+        function togglePageMode() {
+            const data = collectData();
+            localStorage.setItem('resume-data-v2', JSON.stringify(data));
+            document.getElementById('save-status').innerText = 'Changes saved';
+            setTimeout(() => { document.getElementById('save-status').innerText = 'Stored locally'; }, 2000);
+            
+            // Auto-refresh preview if currently open
+            if (document.getElementById('preview-modal').style.display === 'flex') {
+                showPreview();
             }
         }
 
         function populateAll(data) {
             if (!data) return;
+
+            // Page Mode Selection
+            const pageModeSelect = document.getElementById('page-mode');
+            if (pageModeSelect) {
+                pageModeSelect.value = data.multiPage ? 'multi' : 'single';
+            }
             // Clear current dynamics
             document.getElementById('experience-container').innerHTML = '';
             document.getElementById('education-container').innerHTML = '';
@@ -604,6 +807,10 @@
             // Simple fields
             const form = document.getElementById('resume-form');
             Object.keys(data).forEach(key => {
+                if (key === 'name') {
+                    document.getElementById('main-name').value = data[key];
+                    return;
+                }
                 if (form[key] && typeof data[key] === 'string') form[key].value = data[key];
             });
 
@@ -615,16 +822,48 @@
             data.certifications?.forEach(c => addCertification(c));
         }
 
+        function resetToDefaults() {
+            if (confirm('This will clear your current changes and reset the form to the default state. Continue?')) {
+                localStorage.removeItem('resume-data-v2');
+                populateAll(defaultData);
+                document.getElementById('profile-name').value = '';
+                alert('Form reset to default data.');
+            }
+        }
+
         function init() {
             updateProfileList();
+            
+            // Live Reload Logic for "Previously Running Sessions"
+            let initialServerTime = null;
+            async function checkServerStatus() {
+                try {
+                    const res = await fetch('/dev-status');
+                    const data = await res.json();
+                    if (!initialServerTime) {
+                        initialServerTime = data.serverStartTime;
+                    } else if (initialServerTime !== data.serverStartTime) {
+                        console.log('🔄 Server restarted, reloading session...');
+                        window.location.reload();
+                    }
+                } catch (e) {
+                    // Server might be down temporarily during restart
+                }
+            }
+            setInterval(checkServerStatus, 2000);
+
             const saved = localStorage.getItem('resume-data-v2');
             if (saved) {
-                populateAll(JSON.parse(saved));
+                const parsed = JSON.parse(saved);
+                // Detect if the session data is from an older code version
+                if (parsed._v !== SCHEMA_VERSION) {
+                    console.warn('⚠️ Stale session detected. Code has been updated.');
+                    const status = document.getElementById('save-status');
+                    status.innerHTML = `<span style="color:#ef4444">⚠️ Code updated.</span> <a href="#" onclick="resetToDefaults(); return false;" style="color:var(--primary); font-weight:700">Apply New Defaults</a>`;
+                }
+                populateAll(parsed);
             } else {
-                // Populate defaults
-                defaultData.experience.forEach(e => addExperience(e));
-                defaultData.education.forEach(e => addEducation(e));
-                defaultData.skills.forEach(s => addSkillCategory(s));
+                populateAll(defaultData);
             }
         }
 
@@ -636,53 +875,108 @@
             setTimeout(() => { document.getElementById('save-status').innerText = 'Stored locally'; }, 2000);
         });
 
-        // Download Action
+        // Save PDF to Disk Action
         document.getElementById('download-btn').addEventListener('click', async () => {
-            const data = collectData();
             const btn = document.getElementById('download-btn');
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
-
+            
             btn.disabled = true;
-            btnText.innerText = 'Generating Premium PDF...';
+            btnText.innerText = 'Saving...';
             btnIcon.innerText = '⏳';
 
             try {
+                const data = collectData();
+                
                 const response = await fetch('/generate-pdf', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify(data)
                 });
 
                 if (!response.ok) throw new Error('PDF generation failed');
 
-                const savedFilename = response.headers.get('X-File-Saved');
+                const result = await response.json();
+                const savedFilename = result.filename;
                 
-                // Trigger browser download (might still be 0B for some users, but server is the source of truth now)
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = savedFilename || "Resume.pdf";
-                a.click();
-                URL.revokeObjectURL(url);
-                
-                btnText.innerText = 'Saved to Server!';
+                btnText.innerText = 'Saved to Disk!';
                 btnIcon.innerText = '💾';
                 
                 const status = document.getElementById('save-status');
                 status.innerHTML = `File saved to: <b style="color:var(--primary)">generated_resumes/${savedFilename}</b>`;
                 
+                // Trigger client download of the generated file
+                window.location.href = `/download-pdf/${savedFilename}`;
+                
                 setTimeout(() => {
-                    btnText.innerText = 'Download Premium PDF';
-                    btnIcon.innerText = '⬇';
-                }, 3000);
+                    btnText.innerText = 'Save PDF to Disk';
+                    btnIcon.innerText = '💾';
+                }, 4000);
             } catch (err) {
                 alert('Connection Error: Is the server running? ' + err.message);
-                btnText.innerText = 'Error Generating PDF';
+                btnText.innerText = 'Error Saving PDF';
                 btnIcon.innerText = '❌';
             } finally {
                 btn.disabled = false;
+            }
+        });
+
+        // Preview Actions
+        async function showPreview() {
+            const data = collectData();
+            const modal = document.getElementById('preview-modal');
+            const frame = document.getElementById('preview-frame');
+            const previewBtn = document.querySelector('button[onclick="showPreview()"]');
+            
+            previewBtn.disabled = true;
+            const originalContent = previewBtn.innerHTML;
+            previewBtn.innerHTML = '<span>⏳</span> <span>Compiling...</span>';
+
+            modal.style.display = 'flex';
+            frame.srcdoc = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;color:#64748b;">Rendering preview...</div>';
+
+            try {
+                const response = await fetch('/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Preview failed');
+
+                const html = await response.text();
+                
+                // Inject base tag for relative assets if any (though there shouldn't be many)
+                const finalHtml = html.replace('<head>', `<head><base href="${window.location.origin}/">`);
+                
+                frame.srcdoc = finalHtml;
+            } catch (err) {
+                frame.srcdoc = `<div style="padding:20px;color:#ef4444;">Error: ${err.message}</div>`;
+            } finally {
+                previewBtn.disabled = false;
+                previewBtn.innerHTML = originalContent;
+            }
+        }
+
+        function closePreview() {
+            document.getElementById('preview-modal').style.display = 'none';
+        }
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 's') {
+                    e.preventDefault();
+                    saveProfile();
+                } else if (e.key === 'p') {
+                    e.preventDefault();
+                    showPreview();
+                }
+            }
+            if (e.key === 'Escape') {
+                closePreview();
             }
         });
 

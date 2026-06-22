@@ -11,7 +11,7 @@
   /* ─── PAGE SETUP ─────────────────────────────── */
   @page { 
     size: A4; 
-    margin: 0; 
+    margin: 12mm 15mm; 
   }
 
   *, *::before, *::after { 
@@ -21,127 +21,243 @@
   }
 
   :root {
-    --accent-color: #2563eb;
-    --text-main: #1a1a1a;
-    --text-muted: #4b5563;
-    --text-light: #9ca3af;
-    --border-color: #e5e7eb;
+    --accent-color: #0f172a; /* Sophisticated dark slate */
+    --accent-light: #334155;
+    --text-main: #1e293b;
+    --text-muted: #475569;
+    --text-light: #94a3b8;
+    --border-color: #e2e8f0;
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --base-font: 10pt;
-    --line-height: 1.45;
-    --section-gap: 14px;
+    font-family: 'Inter', sans-serif;
+    --base-font: 9.5pt;
+    --line-height: 1.3;
+    --section-gap: 8px;
     
     font-size: var(--base-font);
     line-height: var(--line-height);
     color: var(--text-main);
     background: white;
     width: 210mm;
-    min-height: 297mm;
-    padding: 18mm 20mm;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
   }
 
-  /* ─── AUTO-SCALING ───────────────────────────── */
+  /* Screen/Preview Styling */
+  @media screen {
+    html {
+      background: #f1f5f9;
+      padding: 24px 0;
+      min-height: 100%;
+      display: flex;
+      justify-content: center;
+      overflow-y: auto;
+    }
+    body {
+      background: white;
+      padding: 12mm 15mm;
+      min-height: 297mm;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    {{#unless multiPage}}
+    body {
+      height: 297mm;
+      overflow: hidden;
+    }
+    {{/unless}}
+  }
+
+  /* Print Styling */
+  @media print {
+    html, body {
+      background: white !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
+    {{#unless multiPage}}
+    html, body {
+      height: 100% !important;
+      overflow: hidden !important;
+    }
+    {{else}}
+    html, body {
+      height: auto !important;
+      overflow: visible !important;
+    }
+    {{/unless}}
+
+    h2.section-heading {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    .entry, .skill-row, .contact-row {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+  }
+
+  /* ─── PAGE BREAKS (MULTI-PAGE ONLY) ─────────── */
+  .page-spacer {
+    display: block;
+    width: 100%;
+  }
+
+  @media screen {
+    .page-spacer {
+      margin-left: -15mm;
+      width: 210mm;
+      background: #f1f5f9;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .page-spacer-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 0;
+      border-top: 1px dashed #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-50%);
+    }
+    .page-spacer-label {
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 8px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  @media print {
+    .page-spacer {
+      page-break-before: always !important;
+      break-before: always !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    .page-spacer * {
+      display: none !important;
+    }
+  }
+
   #resume-root {
-    width: 170mm; /* 210mm - 40mm total horizontal padding */
+    width: 100%;
   }
 
-  /* ─── TYPOGRAPHY ─────────────────────────────── */
+  /* ─── HEADER ─────────────────────────────── */
+  .header-section {
+    text-align: center;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 10px;
+  }
+
   .name { 
-    font-size: 24pt; 
-    font-weight: 700; 
-    letter-spacing: -0.02em; 
-    line-height: 1.1;
-    margin-bottom: 4px;
+    font-size: calc(var(--base-font) + 16.5pt); 
+    font-weight: 800; 
+    color: var(--accent-color);
+    letter-spacing: -0.03em; 
+    line-height: 1;
+    margin-bottom: 2px;
+    text-transform: uppercase;
   }
   
   .job-title { 
-    font-size: 11pt; 
-    font-weight: 500; 
-    color: var(--accent-color); 
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .section-heading {
-    font-size: 9.5pt;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--accent-color);
-    border-bottom: 1.5px solid var(--accent-color);
-    padding-bottom: 4px;
-    margin-bottom: 10px;
-    margin-top: var(--section-gap);
-  }
-
-  .entry + .entry { 
-    margin-top: 12px; 
-  }
-
-  .entry-title { 
-    font-size: 10.5pt; 
-    font-weight: 700; 
-  }
-  
-  .entry-sub { 
-    font-size: 10pt;  
+    font-size: calc(var(--base-font) + 1.5pt); 
     font-weight: 600; 
-    color: var(--text-muted); 
-  }
-  
-  .entry-date { 
-    font-size: 9pt;    
-    font-weight: 500; 
-    color: var(--text-muted); 
-  }
-  
-  .bullet, .summary-text { 
-    font-size: 9.5pt;  
-    color: var(--text-main); 
-  }
-
-  .contact-item { 
-    font-size: 9pt;    
-    color: var(--text-muted); 
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  /* ─── LAYOUT HELPERS ─────────────────────────── */
-  .flex-between {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
+    color: var(--accent-light); 
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
   }
 
   .contact-row {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 4px 20px;
-    margin-top: 8px;
+    gap: 4px 12px;
+    font-size: calc(var(--base-font) - 1pt);
+    color: var(--text-muted);
   }
 
+  .contact-item { display: flex; align-items: center; gap: 4px; }
+
+  /* ─── SECTIONS ───────────────────────────── */
+  h2.section-heading {
+    font-size: calc(var(--base-font) + 0.5pt);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent-color);
+    background: #f1f5f9;
+    padding: 2px 8px;
+    margin-top: var(--section-gap);
+    margin-bottom: 8px;
+    border-left: 4px solid var(--accent-color);
+  }
+
+  .entry { 
+    margin-bottom: 6px; 
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  .flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .entry-title { font-size: calc(var(--base-font) + 0.5pt); font-weight: 700; color: #000; }
+  .clickable-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 0.5pt solid #cbd5e1;
+    transition: border-color 0.2s;
+  }
+  .clickable-link:hover {
+    border-color: var(--accent-color);
+  }
+  .entry-sub { font-size: var(--base-font); font-weight: 600; color: var(--accent-light); }
+  .entry-date { font-size: calc(var(--base-font) - 1pt); font-weight: 500; color: var(--text-muted); }
+  
+  .summary-text { font-size: calc(var(--base-font) - 0.5pt); margin-bottom: 4px; color: var(--text-main); }
+
   .bullets {
-    list-style: none;
-    padding-left: 14px;
-    margin-top: 5px;
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 2px;
   }
 
   .bullets li {
     position: relative;
-    margin-bottom: 3px;
-    line-height: 1.4;
+    padding-left: 12px;
+    margin-bottom: 2px;
+    line-height: var(--line-height);
+    font-size: calc(var(--base-font) - 0.7pt);
+    white-space: pre-wrap;
   }
 
   .bullets li::before {
-    content: '•';
+    content: "•";
     position: absolute;
-    left: -14px;
+    left: 0;
     color: var(--accent-color);
     font-weight: bold;
   }
@@ -149,62 +265,93 @@
   .skills-grid {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
   }
 
-  .skill-row {
-    display: flex;
-    gap: 8px;
-    font-size: 9.5pt;
-  }
-
-  .skill-label {
-    font-weight: 700;
-    min-width: 120px;
-    color: var(--text-muted);
-  }
-
-  .skill-items {
-    color: var(--text-main);
-  }
+  .skill-row { font-size: calc(var(--base-font) - 0.7pt); display: flex; gap: 6px; }
+  .skill-label { font-weight: 700; color: var(--accent-light); min-width: 130px; }
+  .skill-items { color: var(--text-main); }
 
 </style>
 </head>
 <body>
-<div id="resume-root">
+<div id="resume-viewport">
+  <div id="resume-root">
 
   <!-- ── HEADER ─────────────────────────────── -->
   <header class="header-section">
-    <div class="name">{{name}}</div>
-    <div class="job-title">{{title}}</div>
-    <div class="contact-row">
-      {{#if email}}<span class="contact-item">✉ {{email}}</span>{{/if}}
-      {{#if phone}}<span class="contact-item">☏ {{phone}}</span>{{/if}}
-      {{#if location}}<span class="contact-item">📍 {{location}}</span>{{/if}}
-      {{#if linkedin}}<span class="contact-item">in/{{linkedin}}</span>{{/if}}
-      {{#if github}}<span class="contact-item">github.com/{{github}}</span>{{/if}}
-      {{#if website}}<span class="contact-item">🌐 {{website}}</span>{{/if}}
+    <h1 class="name" aria-label="Full Name">{{name}}</h1>
+    <div class="job-title" aria-label="Professional Title">{{title}}</div>
+    <div class="contact-row" aria-label="Contact Details">
+      {{#if email}}<span class="contact-item">Email: {{email}}</span>{{/if}}
+      {{#if phone}}<span class="contact-item">Phone: {{phone}}</span>{{/if}}
+      {{#if location}}<span class="contact-item">Location: {{location}}</span>{{/if}}
+      {{#if linkedin}}<span class="contact-item">LinkedIn: {{linkedin}}</span>{{/if}}
+      {{#if github}}<span class="contact-item">GitHub: {{github}}</span>{{/if}}
+      {{#if website}}<span class="contact-item">Portfolio: {{website}}</span>{{/if}}
     </div>
   </header>
 
-  <!-- ── SUMMARY ────────────────────────────── -->
   {{#if summary}}
-  <div class="section-heading">Summary</div>
-  <p class="summary-text">{{summary}}</p>
+  <section id="summary" aria-label="Professional Summary">
+    <h2 class="section-heading">Professional Summary</h2>
+    <p class="summary-text" style="text-align: justify; line-height: 1.35; margin-bottom: 4px;">{{summary}}</p>
+  </section>
   {{/if}}
+
 
   <!-- ── EXPERIENCE ─────────────────────────── -->
   {{#if experience.length}}
-  <div class="section-heading">Professional Experience</div>
-  {{#each experience}}
+  <section id="experience" aria-label="Experience">
+    <h2 class="section-heading">Professional Experience</h2>
+    {{#each experience}}
+    <div class="entry">
+      <div class="flex-between">
+        <h3 class="entry-title">{{role}}</h3>
+        <span class="entry-date">{{duration}}</span>
+      </div>
+      <div class="flex-between">
+        <h4 class="entry-sub">{{company}}</h4>
+        {{#if location}}<span class="entry-date">{{location}}</span>{{/if}}
+      </div>
+      {{#if bullets.length}}
+      <ul class="bullets">
+        {{#each bullets}}<li class="bullet">{{this}}</li>{{/each}}
+      </ul>
+      {{/if}}
+    </div>
+    {{/each}}
+  </section>
+  {{/if}}
+
+  <!-- ── EDUCATION ──────────────────────────── -->
+  {{#if education.length}}
+  <section id="education" aria-label="Education">
+    <h2 class="section-heading">Education</h2>
+    {{#each education}}
+    <div class="entry">
+      <div class="flex-between">
+        <h3 class="entry-title">{{institution}}</h3>
+        <span class="entry-date">{{year}}</span>
+      </div>
+      <div class="flex-between">
+        <h4 class="entry-sub">{{degree}}</h4>
+        {{#if gpa}}<span class="entry-date">GPA: {{gpa}}</span>{{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </section>
+  {{/if}}
+
+  <!-- ── PROJECTS ───────────────────────────── -->
+  {{#if projects.length}}
+  <section id="projects" aria-label="Projects">
+    <h2 class="section-heading">Projects</h2>
+  {{#each projects}}
   <div class="entry">
     <div class="flex-between">
-      <span class="entry-title">{{role}}</span>
-      <span class="entry-date">{{duration}}</span>
-    </div>
-    <div class="flex-between">
-      <span class="entry-sub">{{company}}</span>
-      {{#if location}}<span class="entry-date">{{location}}</span>{{/if}}
+      <span class="entry-title">{{#if link}}<a href="{{link}}" class="clickable-link">{{name}}</a>{{else}}{{name}}{{/if}}</span>
+      {{#if tech}}<span class="entry-date">{{tech}}</span>{{/if}}
     </div>
     {{#if bullets.length}}
     <ul class="bullets">
@@ -213,59 +360,32 @@
     {{/if}}
   </div>
   {{/each}}
-  {{/if}}
-
-  <!-- ── EDUCATION ──────────────────────────── -->
-  {{#if education.length}}
-  <div class="section-heading">Education</div>
-  {{#each education}}
-  <div class="entry">
-    <div class="flex-between">
-      <span class="entry-title">{{institution}}</span>
-      <span class="entry-date">{{year}}</span>
-    </div>
-    <div class="flex-between">
-      <span class="entry-sub">{{degree}}</span>
-      {{#if gpa}}<span class="entry-date">GPA: {{gpa}}</span>{{/if}}
-    </div>
-  </div>
-  {{/each}}
-  {{/if}}
-
-  <!-- ── PROJECTS ───────────────────────────── -->
-  {{#if projects.length}}
-  <div class="section-heading">Projects</div>
-  {{#each projects}}
-  <div class="entry">
-    <div class="flex-between">
-      <span class="entry-title">{{name}}{{#if link}} | <span style="font-weight:400;font-size:9pt;color:var(--accent-color)">{{link}}</span>{{/if}}</span>
-      {{#if tech}}<span class="entry-date">{{tech}}</span>{{/if}}
-    </div>
-    {{#if description}}<p class="bullet" style="margin-top:2px">{{description}}</p>{{/if}}
-  </div>
-  {{/each}}
+  </section>
   {{/if}}
 
   <!-- ── SKILLS ─────────────────────────────── -->
   {{#if skills.categories.length}}
-  <div class="section-heading">Skills</div>
-  <div class="skills-grid">
-    {{#each skills.categories}}
-    <div class="skill-row">
-      <span class="skill-label">{{label}}:</span>
-      <span class="skill-items">{{items}}</span>
+  <section id="skills" aria-label="Skills">
+    <h2 class="section-heading">Skills</h2>
+    <div class="skills-grid">
+      {{#each skills.categories}}
+      <div class="skill-row">
+        <strong class="skill-label">{{label}}:</strong>
+        <span class="skill-items">{{items}}</span>
+      </div>
+      {{/each}}
     </div>
-    {{/each}}
-  </div>
+  </section>
   {{/if}}
 
   <!-- ── CERTIFICATIONS ─────────────────────── -->
   {{#if certifications.length}}
-  <div class="section-heading">Certifications</div>
+  <section id="certifications" aria-label="Certifications">
+    <h2 class="section-heading">Certifications</h2>
   {{#each certifications}}
   <div class="entry">
     <div class="flex-between">
-      <span class="entry-title">{{name}}</span>
+      <span class="entry-title">{{#if link}}<a href="{{link}}" class="clickable-link">{{name}}</a>{{else}}{{name}}{{/if}}</span>
       <span class="entry-date">{{year}}</span>
     </div>
     <span class="entry-sub">{{issuer}}</span>
@@ -273,55 +393,261 @@
   {{/each}}
   {{/if}}
 
-</div><!-- #resume-root -->
+  </div><!-- #resume-root -->
+</div><!-- #resume-viewport -->
 
 <script>
   /**
    * Progressive auto-fit logic:
-   * 1. Shrink font-size (floor 8pt)
-   * 2. Shrink line-height (floor 1.1)
-   * 3. Shrink section margins (floor 4px)
+   * 1. Shrink font-size (floor 7.5pt)
+   * 2. Shrink line-height (floor 1.05)
+   * 3. Shrink section margins (floor 2px)
    * 4. Nuclear fallback: scale()
    */
-  function autoFit(rootEl, a4HeightPx = 1122) {
-    const style = rootEl.style;
-    let fontSize   = parseFloat(getComputedStyle(rootEl).fontSize) || 13.33; // 10pt ~ 13.33px
-    let lineHeight = parseFloat(getComputedStyle(rootEl).lineHeight) / fontSize || 1.45;
-    let sectionGap = 14;
+  function autoFit(rootEl) {
+    if (!rootEl) return;
+    const viewportEl = document.getElementById('resume-viewport');
 
-    const fits = () => rootEl.scrollHeight <= a4HeightPx;
+    // Remove any leftover pagination spacers from multi-page mode
+    const existingSpacers = rootEl.querySelectorAll('.page-spacer');
+    existingSpacers.forEach(s => s.remove());
 
-    // Pass 1: font size (0.1pt steps)
-    while (!fits() && fontSize > 10.66) { // 8pt ~ 10.66px
-      fontSize -= 0.133; // ~0.1pt
-      rootEl.style.setProperty('--base-font', `${(fontSize * 0.75).toFixed(2)}pt`);
+    // Reset inline overrides
+    rootEl.style.cssText = '';
+    document.body.style.padding = '';
+    viewportEl.style.cssText = '';
+    rootEl.querySelectorAll('section').forEach(s => s.style.marginBottom = '');
+
+    // In print mode, margins are exactly 0 and height is exactly A4 (1122.5px)
+    // We want the screen preview to exactly match the print output scale.
+    // So we use the absolute A4 pixel height minus any screen padding applied to body.
+    const getTargetHeight = () => {
+      const bodyStyle = window.getComputedStyle(document.body);
+      const pt = parseFloat(bodyStyle.paddingTop) || 0;
+      const pb = parseFloat(bodyStyle.paddingBottom) || 0;
+      // We subtract an extra 4px buffer to prevent accidental overflow triggers in Puppeteer
+      return 1122.5 - pt - pb - 4; 
+    };
+
+    let targetHeight = getTargetHeight();
+
+    // Binary search for the perfect scale factor that fills the page.
+    // We allow extreme shrinking (0.3) for huge resumes and extreme growing (2.0) for short ones,
+    // guaranteeing we "use the space as efficient as possible" as requested.
+    let low = 0.3;
+    let high = 2.0;
+    let best = 1.0;
+
+    for (let i = 0; i < 20; i++) {
+      let mid = (low + high) / 2;
+      
+      let font = 9.5 * mid;
+      let gap = 8 * mid;
+      let lh = 1.0 + 0.3 * mid; 
+
+      rootEl.style.setProperty('--base-font', `${font}pt`);
+      rootEl.style.setProperty('--section-gap', `${gap}px`);
+      rootEl.style.setProperty('--line-height', `${lh}`);
+      
+      // We check offsetHeight against targetHeight
+      if (rootEl.offsetHeight > targetHeight) {
+        high = mid; // Too big, scale down
+      } else {
+        low = mid; // Fits, try scaling up
+        best = mid;
+      }
     }
 
-    // Pass 2: line-height
-    while (!fits() && lineHeight > 1.1) {
-      lineHeight -= 0.05;
-      rootEl.style.setProperty('--line-height', `${lineHeight.toFixed(2)}`);
+    // Apply the best fitting scale
+    rootEl.style.setProperty('--base-font', `${9.5 * best}pt`);
+    rootEl.style.setProperty('--section-gap', `${8 * best}px`);
+    rootEl.style.setProperty('--line-height', `${1.0 + 0.3 * best}`);
+
+    // Measure the exact remaining gap
+    let remainingSpace = targetHeight - rootEl.offsetHeight;
+    
+    // Distribute ALL remaining space perfectly between sections to ensure 0 gap at the bottom!
+    if (remainingSpace > 2) {
+        const sections = rootEl.querySelectorAll('section');
+        if (sections.length > 1) {
+            const extraGap = remainingSpace / (sections.length - 1);
+            // Apply margin to all except the last section
+            sections.forEach((sec, index) => {
+                if (index < sections.length - 1) {
+                    sec.style.marginBottom = `${extraGap}px`;
+                }
+            });
+        } else if (sections.length === 1) {
+             // If only 1 section, just add padding to it
+             sections[0].style.paddingBottom = `${remainingSpace}px`;
+        }
     }
 
-    // Pass 3: section gap
-    while (!fits() && sectionGap > 4) {
-      sectionGap -= 1;
-      rootEl.style.setProperty('--section-gap', `${sectionGap}px`);
+    // Ensure the container perfectly matches targetHeight to prevent body scrolling out of bounds
+    viewportEl.style.height = `${targetHeight}px`;
+    viewportEl.style.overflow = 'hidden';
+  }
+
+  function paginateResume(rootEl) {
+    if (!rootEl) return;
+
+    // 1. Remove all existing spacers
+    const existingSpacers = rootEl.querySelectorAll('.page-spacer');
+    existingSpacers.forEach(s => s.remove());
+    rootEl.style.cssText = '';
+    rootEl.querySelectorAll('section').forEach(s => s.style.marginBottom = '');
+
+    // Compute A4 dimensions dynamically
+    const tempDiv = document.createElement('div');
+    tempDiv.style.height = '297mm';
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    document.body.appendChild(tempDiv);
+    const a4Height = tempDiv.offsetHeight;
+    document.body.removeChild(tempDiv);
+
+    const bodyStyle = window.getComputedStyle(document.body);
+    const paddingTop = parseFloat(bodyStyle.paddingTop) || 0;
+    const paddingBottom = parseFloat(bodyStyle.paddingBottom) || 0;
+
+    const rootRect = rootEl.getBoundingClientRect();
+    
+    const getBlockPos = (el) => {
+      const r = el.getBoundingClientRect();
+      return {
+        top: r.top - rootRect.top + paddingTop,
+        bottom: r.bottom - rootRect.top + paddingTop,
+        height: r.height
+      };
+    };
+
+    // 2. Gather blocks in order
+    const elements = [];
+    
+    const header = rootEl.querySelector('.header-section');
+    if (header) {
+      elements.push({ type: 'header', element: header });
     }
 
-    // Nuclear fallback: content is just way too long
-    if (!fits()) {
-      const scale = a4HeightPx / rootEl.scrollHeight;
-      style.transform = `scale(${scale})`;
-      style.transformOrigin = 'top left';
-      document.body.style.height = a4HeightPx + 'px';
-      document.body.style.overflow = 'hidden';
+    const sections = rootEl.querySelectorAll('section');
+    sections.forEach(section => {
+      if (section.offsetHeight === 0) return;
+      
+      const heading = section.querySelector('h2.section-heading');
+      // Fix: Treat .skill-row as individual entries so the skills grid can span across pages properly
+      const entries = Array.from(section.querySelectorAll('.entry, .skill-row, .summary-text'));
+      
+      if (heading) {
+        if (entries.length > 0) {
+          elements.push({
+            type: 'heading-group',
+            heading: heading,
+            firstEntry: entries[0],
+            section: section
+          });
+          for (let i = 1; i < entries.length; i++) {
+            elements.push({
+              type: 'entry',
+              element: entries[i],
+              section: section
+            });
+          }
+        } else {
+          elements.push({
+            type: 'heading-only',
+            element: heading,
+            section: section
+          });
+        }
+      } else {
+        entries.forEach(entry => {
+          elements.push({
+            type: 'entry',
+            element: entry,
+            section: section
+          });
+        });
+      }
+    });
+
+    // 3. Paginate
+    let pageIndex = 1;
+    for (const block of elements) {
+      let blockTop, blockBottom;
+      if (block.type === 'heading-group') {
+        const headingPos = getBlockPos(block.heading);
+        const entryPos = getBlockPos(block.firstEntry);
+        blockTop = headingPos.top;
+        blockBottom = entryPos.bottom;
+      } else {
+        const pos = getBlockPos(block.element);
+        blockTop = pos.top;
+        blockBottom = pos.bottom;
+      }
+
+      const currentContentEnd = pageIndex * a4Height - paddingBottom;
+
+      if (blockBottom > currentContentEnd) {
+        // Pushing to next page
+        pageIndex++;
+        const targetTop = (pageIndex - 1) * a4Height + paddingTop;
+        const spacerHeight = targetTop - blockTop;
+        const lineOffset = a4Height - (blockTop % a4Height);
+
+        if (spacerHeight > 0) {
+          const spacer = document.createElement('div');
+          spacer.className = 'page-spacer no-print';
+          spacer.style.height = `${spacerHeight}px`;
+
+          const line = document.createElement('div');
+          line.className = 'page-spacer-line';
+          line.style.top = `${lineOffset}px`;
+
+          const label = document.createElement('span');
+          label.className = 'page-spacer-label';
+          label.innerText = `Page ${pageIndex - 1} | Page ${pageIndex}`;
+          
+          line.appendChild(label);
+          spacer.appendChild(line);
+
+          const insertBeforeEl = block.type === 'heading-group' ? block.heading : block.element;
+          insertBeforeEl.parentNode.insertBefore(spacer, insertBeforeEl);
+        }
+      }
     }
   }
 
-  // Run immediately
+  // Run auto-fit or paginate immediately and also after fonts are ready
   (function() {
-    autoFit(document.getElementById('resume-root'));
+    const root = document.getElementById('resume-root');
+    
+    function runHandler() {
+      // Correct links without protocol (e.g., github.com -> https://github.com)
+      document.querySelectorAll('a').forEach(a => {
+        let href = a.getAttribute('href');
+        if (href && !/^https?:\/\//i.test(href) && !/^mailto:/i.test(href) && !/^tel:/i.test(href) && !/^#/i.test(href)) {
+          a.setAttribute('href', 'https://' + href);
+        }
+      });
+
+      {{#unless multiPage}}
+      autoFit(root);
+      {{else}}
+      paginateResume(root);
+      {{/unless}}
+    }
+
+    runHandler();
+    if (document.fonts) {
+      document.fonts.ready.then(runHandler);
+    }
+
+    // Recalculate layout dynamically on browser window resizing or zooming
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(runHandler, 150);
+    });
   })();
 </script>
 </body>
