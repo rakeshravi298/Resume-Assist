@@ -420,6 +420,7 @@
   function autoFit(rootEl) {
     if (!rootEl) return;
     const viewportEl = document.getElementById('resume-viewport');
+    const fillSpace = {{#if fillSpace}}true{{else}}false{{/if}};
 
     // Remove any leftover pagination spacers from multi-page mode
     const existingSpacers = rootEl.querySelectorAll('.page-spacer');
@@ -445,10 +446,9 @@
     let targetHeight = getTargetHeight();
 
     // Binary search for the perfect scale factor that fills the page.
-    // We allow extreme shrinking (0.3) for huge resumes and extreme growing (2.0) for short ones,
-    // guaranteeing we "use the space as efficient as possible" as requested.
+    // If fillSpace is true, we allow scaling up to 2.0. If false, we cap scaling at 1.0 (natural size).
     let low = 0.3;
-    let high = 2.0;
+    let high = fillSpace ? 2.0 : 1.0;
     let best = 1.0;
 
     for (let i = 0; i < 20; i++) {
@@ -479,8 +479,8 @@
     // Measure the exact remaining gap
     let remainingSpace = targetHeight - rootEl.offsetHeight;
     
-    // Distribute ALL remaining space perfectly between sections to ensure 0 gap at the bottom!
-    if (remainingSpace > 2) {
+    // Distribute remaining space only if fillSpace mode is enabled
+    if (fillSpace && remainingSpace > 2) {
         const sections = rootEl.querySelectorAll('section');
         if (sections.length > 1) {
             const extraGap = remainingSpace / (sections.length - 1);

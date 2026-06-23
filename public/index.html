@@ -349,6 +349,14 @@
                     <option value="multi">Multi Page</option>
                 </select>
             </div>
+            <div style="height: 24px; width: 1px; background: var(--border);"></div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="page-spacing" style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 0;">Spacing:</label>
+                <select id="page-spacing" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: white; cursor: pointer;" onchange="togglePageMode()">
+                    <option value="natural">Compact (Space at bottom)</option>
+                    <option value="fill">Fill Page (Expanded)</option>
+                </select>
+            </div>
             <span id="save-status" style="font-size: 12px; color: var(--text-muted);">Stored locally</span>
         </div>
     </nav>
@@ -486,6 +494,7 @@
             const data = {
                 _v: SCHEMA_VERSION,
                 multiPage: document.getElementById('page-mode').value === 'multi',
+                fillSpace: document.getElementById('page-spacing').value === 'fill',
                 name: document.getElementById('main-name').value,
                 title: form.querySelector('input[name="title"]').value,
                 email: form.querySelector('input[name="email"]').value,
@@ -653,6 +662,7 @@
         const defaultData = {
             _v: SCHEMA_VERSION,
             multiPage: false,
+            fillSpace: false,
             name: 'Rakesh R',
             title: 'Senior Data Engineer',
             email: 'rakeshravi796@gmail.com',
@@ -778,6 +788,9 @@
         }
 
         function togglePageMode() {
+            const isMulti = document.getElementById('page-mode').value === 'multi';
+            document.getElementById('page-spacing').disabled = isMulti;
+
             const data = collectData();
             localStorage.setItem('resume-data-v2', JSON.stringify(data));
             document.getElementById('save-status').innerText = 'Changes saved';
@@ -796,6 +809,13 @@
             const pageModeSelect = document.getElementById('page-mode');
             if (pageModeSelect) {
                 pageModeSelect.value = data.multiPage ? 'multi' : 'single';
+            }
+            
+            // Page Spacing Selection
+            const pageSpacingSelect = document.getElementById('page-spacing');
+            if (pageSpacingSelect) {
+                pageSpacingSelect.value = data.fillSpace ? 'fill' : 'natural';
+                pageSpacingSelect.disabled = data.multiPage;
             }
             // Clear current dynamics
             document.getElementById('experience-container').innerHTML = '';
